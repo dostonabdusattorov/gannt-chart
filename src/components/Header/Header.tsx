@@ -1,23 +1,28 @@
 import React from "react";
-import "gantt-task-react/dist/index.css";
 import { ViewMode } from "gantt-task-react";
-type HeaderProps = {
-  isChecked: boolean;
-  onViewListChange: (isChecked: boolean) => void;
+import { HiMiniArrowsPointingOut } from "react-icons/hi2";
+import { HiMiniArrowsPointingIn } from "react-icons/hi2";
+import "gantt-task-react/dist/index.css";
+import "./Header.scss";
+
+interface HeaderProps {
   onViewModeChange: (viewMode: ViewMode) => void;
-};
+  onResize: () => void;
+  isFullScreen: boolean;
+}
+
 export const Header: React.FC<HeaderProps> = ({
   onViewModeChange,
-  onViewListChange,
-  isChecked,
+  onResize,
+  isFullScreen,
 }) => {
   return (
-    <div className="header">
+    <header className="header">
       <div className="charts">
-        <span>Smane</span>
+        <span>Smana</span>
         <span className="active">Gannt grafigi</span>
       </div>
-      <div className="filter">
+      <div className="filter_resizer">
         <select
           name="filter"
           id="filter"
@@ -25,17 +30,18 @@ export const Header: React.FC<HeaderProps> = ({
             onViewModeChange(event.target.value as ViewMode);
           }}
         >
-          <option value={ViewMode.Day} selected>
-            Kun
-          </option>
-          <option value={ViewMode.Week} selected>
-            Hafta
-          </option>
-          <option value={ViewMode.Month} selected>
-            Oy
-          </option>
+          <option value={ViewMode.Day}>Kun</option>
+          <option value={ViewMode.Week}>Hafta</option>
+          <option value={ViewMode.Month}>Oy</option>
         </select>
+        <span onClick={onResize}>
+          {isFullScreen ? (
+            <HiMiniArrowsPointingIn className="resizer" size={25} />
+          ) : (
+            <HiMiniArrowsPointingOut className="resizer" size={25} />
+          )}
+        </span>
       </div>
-    </div>
+    </header>
   );
 };

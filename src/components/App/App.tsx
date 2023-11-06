@@ -1,19 +1,26 @@
 import { Gantt, Task, ViewMode } from "gantt-task-react";
-import { useState } from "react";
-import { initTasks } from "../data";
-import { getStartEndDateForProject } from "../utils";
-import { Header } from "./Header/Header";
+import { useRef, useState } from "react";
+import { initTasks } from "../../data";
+import { getStartEndDateForProject } from "../../utils";
+import { Header } from "../Header/Header";
+import "./App.scss";
 
 export const App = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.Day);
   const [tasks, setTasks] = useState<Task[]>(initTasks());
-  const [isChecked, setIsChecked] = useState(true);
-  let columnWidth = 60;
-  if (view === ViewMode.Month) {
-    columnWidth = 300;
-  } else if (view === ViewMode.Week) {
-    columnWidth = 250;
-  }
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const resizeHandler = () => {
+    if (isFullScreen) {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    } else {
+      ref?.current?.parentElement?.parentElement?.requestFullscreen();
+      setIsFullScreen(true);
+    }
+  };
 
   const handleTaskChange = (task: Task) => {
     console.log("On date change Id:" + task.id);
@@ -48,25 +55,17 @@ export const App = () => {
     console.log("On progress change Id:" + task.id);
   };
 
-  const handleDblClick = (task: Task) => {
-    alert("On Double Click event Id:" + task.id);
-  };
-
-  const handleSelect = (task: Task, isSelected: boolean) => {
-    console.log(task.name + " has " + (isSelected ? "selected" : "unselected"));
-  };
-
   const handleExpanderClick = (task: Task) => {
     setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
     console.log("On expander click Id:" + task.id);
   };
 
   return (
-    <div>
+    <div className="body" ref={ref}>
       <Header
         onViewModeChange={(viewMode: ViewMode) => setView(viewMode)}
-        onViewListChange={setIsChecked}
-        isChecked={isChecked}
+        onResize={resizeHandler}
+        isFullScreen={isFullScreen}
       />
       <Gantt
         tasks={tasks}
@@ -74,11 +73,8 @@ export const App = () => {
         onDateChange={handleTaskChange}
         onDelete={handleTaskDelete}
         onProgressChange={handleProgressChange}
-        onDoubleClick={handleDblClick}
-        onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
-        listCellWidth={isChecked ? "155px" : ""}
-        columnWidth={columnWidth}
+        columnWidth={60}
       />
     </div>
   );
