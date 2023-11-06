@@ -1,9 +1,10 @@
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { useState } from "react";
-import { initTasks, getStartEndDateForProject } from "./helpers";
-import { ViewSwitcher } from "./ViewSwitcher";
+import { initTasks } from "../data";
+import { getStartEndDateForProject } from "../utils";
+import { Header } from "./Header/Header";
 
-export default function App() {
+export const App = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.Day);
   const [tasks, setTasks] = useState<Task[]>(initTasks());
   const [isChecked, setIsChecked] = useState(true);
@@ -62,12 +63,11 @@ export default function App() {
 
   return (
     <div>
-      <ViewSwitcher
+      <Header
         onViewModeChange={(viewMode: ViewMode) => setView(viewMode)}
         onViewListChange={setIsChecked}
         isChecked={isChecked}
       />
-      <h3>Gantt With Unlimited Height</h3>
       <Gantt
         tasks={tasks}
         viewMode={view}
@@ -82,4 +82,4 @@ export default function App() {
       />
     </div>
   );
-}
+};

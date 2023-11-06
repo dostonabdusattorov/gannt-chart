@@ -10,7 +10,7 @@ export const initTasks = () => {
       id: "ProjectSample",
       progress: 25,
       type: "project",
-      hideChildren: true,
+      hideChildren: false,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
@@ -43,10 +43,9 @@ export const initTasks = () => {
       name: "Discussion with team",
       id: "Task 2",
       progress: 10,
-      dependencies: ["Task 1"],
       type: "project",
       project: "ProjectSample",
-      hideChildren: true,
+      hideChildren: false,
     },
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 4),
@@ -98,21 +97,4 @@ export const initTasks = () => {
     },
   ];
   return tasks;
-};
-
-export const getStartEndDateForProject = (tasks: Task[], projectId: string) => {
-  const projectTasks = tasks.filter((t) => t.project === projectId);
-  let start = projectTasks[0].start;
-  let end = projectTasks[0].end;
-
-  for (let i = 0; i < projectTasks.length; i++) {
-    const task = projectTasks[i];
-    if (start.getTime() > task.start.getTime()) {
-      start = task.start;
-    }
-    if (end.getTime() < task.end.getTime()) {
-      end = task.end;
-    }
-  }
-  return [start, end];
 };
