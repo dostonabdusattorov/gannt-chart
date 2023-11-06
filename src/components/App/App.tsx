@@ -5,14 +5,17 @@ import { getStartEndDateForProject } from "../../utils";
 import { Header } from "../Header/Header";
 import "./App.scss";
 
+const initialTasks: Task[] = initTasks();
+
 export const App = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.Day);
-  const [tasks, setTasks] = useState<Task[]>(initTasks());
+  const [tasks, setTasks] = useState(initialTasks);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [columnWidth, setColumnWidth] = useState(100);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const resizeHandler = () => {
+  const handleResize = () => {
     if (isFullScreen) {
       document.exitFullscreen();
       setIsFullScreen(false);
@@ -22,9 +25,21 @@ export const App = () => {
     }
   };
 
+  const handleViewModeChange = (viewMode: ViewMode) => {
+    setView(viewMode);
+    const columnWidth =
+      viewMode === ViewMode.Day ? 100 : viewMode === ViewMode.Week ? 400 : 800;
+    setColumnWidth(columnWidth);
+  };
+
   const handleTaskChange = (task: Task) => {
-    console.log("On date change Id:" + task.id);
-    let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+    let newTasks = tasks.map((t) => {
+      if (t.dependencies && t.dependencies.includes(task.id)) {
+        return { ...t, start: task.end };
+      }
+      return t.id === task.id ? task : t;
+    });
+
     if (task.project) {
       const [start, end] = getStartEndDateForProject(newTasks, task.project);
       const project =
@@ -39,6 +54,7 @@ export const App = () => {
         );
       }
     }
+
     setTasks(newTasks);
   };
 
@@ -51,8 +67,30 @@ export const App = () => {
   };
 
   const handleProgressChange = async (task: Task) => {
-    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
-    console.log("On progress change Id:" + task.id);
+    const project = task.project;
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (project && t.id === project) {
+          const progressAll = prev.reduce((acc, curr) => {
+            if (curr.project === project && curr.id !== task.id) {
+              console.log(curr);
+
+              return acc + curr.progress;
+            }
+
+            return acc;
+          }, 0);
+
+          console.log(progressAll);
+
+          return { ...t, progress: (task.progress + progressAll) / 2 };
+        }
+        if (t.dependencies && t.dependencies.includes(task.id)) {
+          return { ...t, isDisabled: task.progress < 100 };
+        }
+        return t.id === task.id ? task : t;
+      })
+    );
   };
 
   const handleExpanderClick = (task: Task) => {
@@ -63,18 +101,20 @@ export const App = () => {
   return (
     <div className="body" ref={ref}>
       <Header
-        onViewModeChange={(viewMode: ViewMode) => setView(viewMode)}
-        onResize={resizeHandler}
+        onViewModeChange={handleViewModeChange}
+        onResize={handleResize}
         isFullScreen={isFullScreen}
       />
       <Gantt
         tasks={tasks}
         viewMode={view}
+        viewDate={new Date(2024)}
         onDateChange={handleTaskChange}
         onDelete={handleTaskDelete}
         onProgressChange={handleProgressChange}
         onExpanderClick={handleExpanderClick}
-        columnWidth={60}
+        columnWidth={columnWidth}
+        listCellWidth=""
       />
     </div>
   );
