@@ -1,0 +1,23 @@
+.table-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  // justify-content: space-between;
+  border-top: 1px solid #eaecf0;
+  border-bottom: 1px solid #eaecf0;
+  height: 5rem;
+  div {
+    border-right: 1px solid #eaecf0;
+    text-align: left;
+    font-size: 1.2rem;
+    color: #667085;
+    font-weight: 400;
+    padding: 1.7rem 0 0 1rem;
+    .icon {
+      color: #1e90ff;
+    }
+  }
+  .names {
+    display: flex;
+    gap: 0.5rem;
+  }
+}

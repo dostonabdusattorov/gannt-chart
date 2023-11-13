@@ -1,3 +1,8 @@
 body::backdrop {
   background-color: #fff;
 }
+
+.body {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+}

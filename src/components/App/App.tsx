@@ -2,8 +2,10 @@ import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { useRef, useState } from "react";
 import { initTasks } from "../../data";
 import { getStartEndDateForProject } from "../../utils";
-import { Header } from "../Header/Header";
+import { Header } from "../Header";
+import { Chart } from "../Chart";
 import "./App.scss";
+import { Table } from "../Table";
 
 const initialTasks: Task[] = initTasks();
 
@@ -58,14 +60,6 @@ export const App = () => {
     setTasks(newTasks);
   };
 
-  const handleTaskDelete = (task: Task) => {
-    const conf = window.confirm("Are you sure about " + task.name + " ?");
-    if (conf) {
-      setTasks(tasks.filter((t) => t.id !== task.id));
-    }
-    return conf;
-  };
-
   const handleProgressChange = async (task: Task) => {
     const project = task.project;
     setTasks((prev) =>
@@ -99,23 +93,23 @@ export const App = () => {
   };
 
   return (
-    <div className="body" ref={ref}>
+    <div ref={ref}>
       <Header
         onViewModeChange={handleViewModeChange}
         onResize={handleResize}
         isFullScreen={isFullScreen}
       />
-      <Gantt
-        tasks={tasks}
-        viewMode={view}
-        viewDate={new Date(2024)}
-        onDateChange={handleTaskChange}
-        onDelete={handleTaskDelete}
-        onProgressChange={handleProgressChange}
-        onExpanderClick={handleExpanderClick}
-        columnWidth={columnWidth}
-        listCellWidth=""
-      />
+      <section className="body">
+        <Table tasks={tasks} />
+        <Chart
+          tasks={tasks}
+          viewMode={view}
+          columnWidth={columnWidth}
+          onDateChange={handleTaskChange}
+          onProgressChange={handleProgressChange}
+          onExpanderClick={handleExpanderClick}
+        />
+      </section>
     </div>
   );
 };
