@@ -1,6 +1,6 @@
 import { Task } from "gantt-task-react";
 
-interface Tasks extends Task {
+export interface Tasks extends Task {
   assignee: string;
 }
 
